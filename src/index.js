@@ -8,22 +8,11 @@ document.addEventListener("DOMContentLoaded", function(){
   // Global variables
   let currentTime = 0;
 
-  // let username = document.getElementById('username').value
-  // let usernameForm = document.getElementById('submituser')
-
-  // function greetUser(username){
-  //   alert(`Welcome, ${username}`)
-  // }
-  //
-  //
-  // usernameForm.addEventListener("submit", event => {
-  //   event.preventDefault()
-  //   let username = document.getElementById('username').value
-  //   fetch('http://localhost:3000/users', {method: "post",
-  //                                       headers: {'Accept': 'application/json',
-  //                                       'Content-Type': 'application/json'},
-  //                                       body: JSON.stringify({user:{name: username, pokemon_id: null}})})
-  //                                       });
+  // Element tags
+  let username = document.getElementById('username').value
+  let usernameForm = document.getElementById('submituser')
+  let welcomeContainer = document.getElementById('welcome')
+  let pokemon = document.getElementById('pokemon')
 
   function startGame() {
     let everySecond = setInterval(() => {
@@ -44,16 +33,19 @@ document.addEventListener("DOMContentLoaded", function(){
         console.log("Game Over")
       }
     }, 1000 );
-
   }
 
   startGame();
 
-  function doesThisWork() {
-    console.log('yes?')
-  }
 
-    let testButton = document.getElementById("test")
-    testButton.addEventListener("click", () => currentTime += 5)
+
+  usernameForm.addEventListener("submit", event => {
+    event.preventDefault()
+    let username = document.getElementById('username').value
+    fetch("http://localhost:3000/users", {method: "post",
+                                       headers: {'Accept': 'application/json',
+                                       'Content-Type': 'application/json'},
+                                       body: JSON.stringify({user:{name: username, pokemon_id: null}})})
+                                       .then(res => res.json()).then(json => greetUser(json))});
 
 });
