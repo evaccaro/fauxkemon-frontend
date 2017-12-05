@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <script src="index.js" type="text/javascript"></script>
+
   </head>
   <body>
     <h1><center><i>Fauxkemon</i></center></h1>
     <p><center><i>You can only catch one!</i></center></p>
     <br>
     <div class="username">
-      <form>
-              <center><label id="name">Enter a username:</label></center>
-              <center><input type="text"></center>
-              <center><input type="submit"></center>
+      <form id="submituser">
+              <label id="name">Enter a username:</label>
+              <input type="text" id="username">
+              <input type="submit">
       </form>
     </div>
     <br>
@@ -21,6 +21,6 @@
       <center>Select a pokemon to grow, train and fight with:</center>
       <center><input type="dropdown" name="username"></input></center>
     </div>
-
+    <script src="src/index.js" type="text/javascript"></script>
   </body>
 </html>
