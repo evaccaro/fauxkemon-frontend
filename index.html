@@ -16,6 +16,10 @@ position: relative -->
       border-radius: 0;
     }
 
+    .gameCenter{
+      text-align: center;
+    }
+
     /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
     .row.content {height: 450px}
 
@@ -64,21 +68,24 @@ position: relative -->
         <div class="col-sm-1 sidenav">
           <canvas id="leftside" width="67" height="450"></canvas>
         </div>
-    <div id="gameCenter" class="col-sm-10 text-left">
-      <h1><center><i>Fauxkemon</i></center></h1>
-      <p><center><i>You can only catch one!</i></center></p>
-      <br>
+    <div id="gameCenter" class="col-sm-10 text-center">
+      <div id="Header">
+        <h1><i>Fauxkemon</i></h1>
+        <p><i>You can only catch one!</i></p>
+      </div>
+
       <div class="username">
         <form id="submituser">
-                <center><label id="name">Enter a username:</label></center>
-                <center><input type="text" id="username"></center>
-                <center><input type="submit"></center>
+                <label id="name">Enter a username:</label>
+                <input type="text" id="username">
+                <input type="submit">
         </form>
       </div>
       <div id="welcome">
 
       </div>
       <br>
+      <div id="holder">
       <div class="pokemon-dropdown" id="pokemonList">
         <form id="pokeSelector">
           <p>Select a pokemon to grow, train and fight with:</p>
@@ -89,6 +96,7 @@ position: relative -->
           <input type="submit" value= "I choose you!">
         </form>
       </div>
+    </div>
       <div id="pokeContainer">
 
       </div>
