@@ -7,24 +7,35 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Global variables
   let currentTime = 0;
+  let user;
+  let pokemon;
 
   // Element tags
   let username = document.getElementById('username').value
   let usernameForm = document.getElementById('submituser')
   let welcomeContainer = document.getElementById('welcome')
 
-  let pokemon = document.getElementById('pokemonList')
+  let pokemonList = document.getElementById('pokemonList')
   let pokemons = document.getElementById('pokes')
   let pokeSelector = document.getElementById('pokeSelector')
   let pokeContainer = document.getElementById('pokeContainer')
+  let pokemonTag = document.getElementById('pokemon')
 
 
 
   function hidePoke(){
-    pokemon.style.visibility = "hidden";
+    pokemonList.style.visibility = "hidden";
   }
 
   hidePoke()
+
+  function findPokemonById(id){
+    fetch(`http://localhost:3000/pokemons/${id}`)
+    .then(res => res.json())
+    .then(console.log)
+  }
+
+  findPokemonById(1)
 
   function showObject(allPoke){
     allPoke.forEach(poke => {
@@ -52,38 +63,37 @@ document.addEventListener("DOMContentLoaded", function(){
     let newUl = document.createElement('ul')
     newUl.innerText = `Welcome to Fauxkemon, ${username.name}`
     welcomeContainer.appendChild(newUl)
-    pokemon.style.visibility = "visible"
+    pokemonList.style.visibility = "visible"
   }
 
-  function showPoke(json, pokeName){
+  function showPoke(json, pokemon){
     pokeSelector.style.visibility = "hidden";
     welcomeContainer.style.visibility = "hidden";
     let newP = document.createElement('p')
-    newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokeName}`
+    newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokemon.name}`
     pokeContainer.appendChild(newP)
   }
 
-  let userId
 
-  let pokemon = document.getElementById('pokemon')
+
 
   function startGame() {
     let everySecond = setInterval(() => {
       if (currentTime < TIME_TO_THIRD){
         currentTime += 1;
-        console.log(currentTime);
+        // console.log(currentTime);
         if (currentTime < TIME_TO_FIRST) {
-          console.log("this is the first pokemon");
+          // console.log("this is the first pokemon");
           // code to change pokemon
 
         } else {
-          console.log("this is the second pokemon")
+          // console.log("this is the second pokemon")
           // code to change pokemon
         }
       }
       else {
         clearInterval(everySecond);
-        console.log("Game Over")
+        // console.log("Game Over")
       }
     }, 1000 );
   }
@@ -101,17 +111,18 @@ document.addEventListener("DOMContentLoaded", function(){
                                        'Content-Type': 'application/json'},
                                        body: JSON.stringify({user:{name: username, pokemon_id: null}})})
                                        .then(res => res.json()).then(json => {greetUser(json)
-                                       userId = json.id})});
+                                       user = json})});
 
   pokeSelector.addEventListener("submit", event => {
     event.preventDefault()
-    let pokemon = document.getElementById('pokes').value
+    let pokes = document.getElementById('pokes').value
     let pokeName = document.querySelectorAll('option').innerText
-    fetch(`http://localhost:3000/users/${userId}`, {method: "PATCH",
+    fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
                                        headers: {'Accept': 'application/json',
                                        'Content-Type': 'application/json'},
-                                       body: JSON.stringify({user:{pokemon_id: pokemon}})})
-                                       .then(res => res.json()).then(json => {showPoke(json, pokeName)
+                                       body: JSON.stringify({user:{pokemon_id: pokes}})})
+                                       .then(res => res.json()).then(json => {pokemon = json.pokemon
+                                         showPoke(json, pokemon)
                                         });
   });
 
@@ -127,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function(){
     ctxL.closePath();
   }
   draw()
-})
+
 
 });
-
