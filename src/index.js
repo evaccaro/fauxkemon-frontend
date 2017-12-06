@@ -66,11 +66,11 @@ document.addEventListener("DOMContentLoaded", function(){
     pokemonList.style.visibility = "visible"
   }
 
-  function showPoke(json, pokeName){
+  function showPoke(json, pokemon){
     pokeSelector.style.visibility = "hidden";
     welcomeContainer.style.visibility = "hidden";
     let newP = document.createElement('p')
-    newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokeName}`
+    newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokemon.name}`
     pokeContainer.appendChild(newP)
   }
 
@@ -121,8 +121,8 @@ document.addEventListener("DOMContentLoaded", function(){
                                        headers: {'Accept': 'application/json',
                                        'Content-Type': 'application/json'},
                                        body: JSON.stringify({user:{pokemon_id: pokes}})})
-                                       .then(res => res.json()).then(json => {showPoke(json, pokeName)
-                                         debugger;
+                                       .then(res => res.json()).then(json => {pokemon = json.pokemon
+                                         showPoke(json, pokemon)
                                         });
   });
 
