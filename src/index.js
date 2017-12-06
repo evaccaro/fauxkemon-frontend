@@ -48,4 +48,18 @@ document.addEventListener("DOMContentLoaded", function(){
                                        body: JSON.stringify({user:{name: username, pokemon_id: null}})})
                                        .then(res => res.json()).then(json => greetUser(json))});
 
+
+  const leftside = document.querySelector('#leftside')
+  const ctxL = leftside.getContext('2d')
+
+  function draw(){
+    ctxL.beginPath();
+    ctxL.fillRect(5, 5, 100, 100)
+    ctxL.fillStyle = "#0095DD";
+    ctxL.closePath();
+  }
+  draw()
+})
+
 });
+
