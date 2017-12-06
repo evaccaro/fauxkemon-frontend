@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- positioning stuff on the page
+position: relative -->
   <style>
     /* Remove the navbar's default margin-bottom and rounded borders */
     .navbar {
@@ -23,7 +25,9 @@
       background-color: #f1f1f1;
       height: 100%;
     }
-
+    #gameConsole{
+      background: url('http://news.coral.co.uk/live/wp-content/uploads/2016/07/landscape-1456483171-pokemon2-1280x531.jpg')
+    }
     /* Set black background color, white text and some padding */
     footer {
       background-color: #555;
@@ -55,12 +59,12 @@
       </div>
     </nav>
 
-    <div class="container-fluid text-center">
+    <div id="gameConsole"class="container-fluid text-center">
       <div class="row content">
         <div class="col-sm-1 sidenav">
-          <canvas id="leftside" width="300" height="300"></canvas>
+          <canvas id="leftside" width="67" height="450"></canvas>
         </div>
-    <div class="col-sm-10 text-left">
+    <div id="gameCenter" class="col-sm-10 text-left">
       <h1><center><i>Fauxkemon</i></center></h1>
       <p><center><i>You can only catch one!</i></center></p>
       <br>
@@ -96,6 +100,7 @@
         </div>
       </div>
     </div>
+    <button id="test">Test</button>
 
 
 
