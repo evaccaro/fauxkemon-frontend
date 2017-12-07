@@ -191,6 +191,19 @@ document.addEventListener("DOMContentLoaded", function(){
 }
 
 
+  let ctx = battleCanvas.getContext('2d')
+
+  function draw(){
+    // debugger;
+    ctx.beginPath();
+    ctx.fillRect(50, 450, 100, 10)
+    ctx.fillStyle = "#0095DD";
+    ctx.fillRect(650, 150, 100, 10)
+    ctx.fillStyle = "#0095DD";
+    ctx.closePath();
+  }
+  draw();
+
   // const leftside = document.querySelector('#leftside')
   // const ctxL = leftside.getContext('2d')
   //
@@ -226,7 +239,6 @@ function battleClosure(user) {
     // -----------> if opponent dead, generate win actions
     // -----------> if you're dead, generate lose actions
     // -----------> else, do another turn
-
 
   }
 }
