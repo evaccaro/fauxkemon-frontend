@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 
+  //THIS IS A TEST PUSH
+
   // App-wide constants
   const TIME_TO_FIRST = 4; // in seconds
   const TIME_TO_SECOND = TIME_TO_FIRST * 2;
