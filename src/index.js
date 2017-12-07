@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function(){
   const TIME_TO_FIRST = 4; // in seconds
   const TIME_TO_SECOND = TIME_TO_FIRST * 2;
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
+  const DEFENSE_MULTIPLIER = 4;
+  const HP_MULTIPLIER = 1.4;
 
   // Global variables
   let currentTime = 0;
@@ -11,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokemon;
 
   // Element tags
+
   let username = document.getElementById('username').value
   let usernameForm = document.getElementById('submituser')
   let welcomeContainer = document.getElementById('welcome')
@@ -22,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokemonTag = document.getElementById('pokemon')
   let gameConsole = document.getElementById('gameConsole')
 
-
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
   }
@@ -32,9 +34,8 @@ document.addEventListener("DOMContentLoaded", function(){
   function findPokemonById(id){
     fetch(`http://localhost:3000/pokemons/${id}`)
     .then(res => res.json())
-    .then(console.log)
+    .then(json => json)
   }
-
 
 
   function showObject(allPoke){
@@ -78,11 +79,15 @@ document.addEventListener("DOMContentLoaded", function(){
   function showPoke(json, pokemon){
     fade(pokeSelector)
     fade(welcomeContainer)
+    let newImg = document.createElement('img');
+    newImg.src = "https://www.spriters-resource.com/resources/sheet_icons/4/3701.png"
+
     let newP = document.createElement('p')
     let trainButton = document.createElement('button')
     trainButton.innerHTML = 'Train!'
     trainButton.id = 'Train'
     newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokemon.name}`
+    pokeContainer.appendChild(newImg);
     pokeContainer.appendChild(newP)
     pokeContainer.appendChild(trainButton)
       trainButton.addEventListener('click', event => {
@@ -141,6 +146,11 @@ document.addEventListener("DOMContentLoaded", function(){
                                        body: JSON.stringify({user:{pokemon_id: pokes}})})
                                        .then(res => res.json()).then(json => {pokemon = json.pokemon
                                          showPoke(json, pokemon)
+                                         battleButton = document.createElement('button');
+                                          battleButton.id = "battleButton"
+                                          battleButton.innerText = "Battle!"
+                                          document.getElementById("battleButtonDiv").appendChild(battleButton);
+                                          battleButton.addEventListener("click", battleClosure(json));
                                         });
   });
 
@@ -171,16 +181,43 @@ document.addEventListener("DOMContentLoaded", function(){
     }, 10);
 }
 
-  const leftside = document.querySelector('#leftside')
-  const ctxL = leftside.getContext('2d')
+  // const leftside = document.querySelector('#leftside')
+  // const ctxL = leftside.getContext('2d')
+  //
+  // function draw(){
+  //   ctxL.beginPath();
+  //   ctxL.fillRect(5, 5, 100, 100)
+  //   ctxL.fillStyle = "#0095DD";
+  //   ctxL.closePath();
+  // }
+  // draw()
+function battleClosure(user) {
+   return function (event) {
+    // what's the users pokemon?
 
-  function draw(){
-    ctxL.beginPath();
-    ctxL.fillRect(5, 5, 100, 100)
-    ctxL.fillStyle = "#0095DD";
-    ctxL.closePath();
+    // generate random pokemon to fight
+    fetch(`http://localhost:3000/pokemons/${Math.floor(Math.random() * 10)}`)
+    .then(res => res.json())
+    .then(enemyPokemon => {
+      battle(user.pokemon, enemyPokemon)
+    })
+
+    // show enemy pokemon
+    // show user pokemon
+    // show battle interface
+
+    function battle(userPokemon, enemyPokemon) {
+      
+    }
+    // one turn
+    // ---> choose option
+    // ---> choose do action
+    // ---> check if dead
+    // -----------> if opponent dead, generate win actions
+    // -----------> if you're dead, generate lose actions
+    // -----------> else, do another turn
+
   }
-  draw()
-
+}
 
 });
