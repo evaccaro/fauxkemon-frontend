@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 
+  //THIS IS A TEST PUSH
+
   // App-wide constants
   const TIME_TO_FIRST = 4; // in seconds
   const TIME_TO_SECOND = TIME_TO_FIRST * 2;
@@ -29,18 +31,14 @@ document.addEventListener("DOMContentLoaded", function(){
   let myHealth = document.getElementById('myHealth')
   let enemyHealth = document.getElementById('enemyHealth')
 
+
   //Setting the Canvas width and height
   battleCanvas.width = "800"
   battleCanvas.height = "600"
 
-  function hideFirst(){
-    gameConsole.style.visibility = "hidden";
-  }
-
-  hideFirst()
-
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
+
   }
   hidePoke()
 
@@ -120,11 +118,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
   createPokeOptions()
 
-  firstPage.addEventListener("click", event => {
-    event.preventDefault()
-    fade(firstPage)
-    setTimeout(unfade(gameConsole), 100)
-  })
 
 
 
@@ -190,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function unfade(element) {
-    var op = 0.01;  // initial opacity
+    var op = 0.1;  // initial opacity
     element.style.display = 'block';
     var timer = setInterval(function () {
         if (op >= 1){
@@ -200,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function(){
         element.style.opacity = op;
         element.style.filter = 'alpha(opacity=' + op * 100 + ")";
         op += op * 0.1;
-    }, 100);
+    }, 10);
 }
 
 
@@ -375,7 +368,6 @@ function battleClosure(user) {
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
         console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
-
       }
 
       function defend(attackingPokemon, defendingPokemon) {
