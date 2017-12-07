@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 
+
 <title>Fauxkemon</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Lobster|Pacifico|Yanone+Kaffeesatz" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <!-- positioning stuff on the page
@@ -18,6 +20,35 @@ position: relative -->
 
     .gameCenter{
       text-align: center;
+    }
+
+    #Header{
+      font-family: 'Lobster', cursive;
+      font-size: 60px;
+    }
+
+    #submituser{
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #welcome{
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 25px;
+        font-weight: bold;
+    }
+
+    #pokeSelector{
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 25px;
+          font-weight: bold;
+    }
+
+    #pokeContainer{
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 25px;
+          font-weight: bold;
     }
 
     /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
@@ -70,8 +101,8 @@ position: relative -->
         </div> -->
     <div id="gameCenter" class="col-sm-12 text-center">
       <div id="Header">
-        <h1><i>Fauxkemon</i></h1>
-        <p><i>You can only catch one!</i></p>
+        <p><i>Fauxkemon</i></p>
+        <h2><i>You can only catch one!</i></h2>
       </div>
 
       <div class="username">
@@ -107,6 +138,8 @@ position: relative -->
         <!-- <div class="col-sm-1 sidenav">
           <canvas id="canvas" width="300" height="300"></canvas>
         </div> -->
+      </div>
+      <div id="battleButtonDiv">
       </div>
     </div>
 
