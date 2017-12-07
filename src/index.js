@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function(){
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
   const DEFENSE_DIVISOR = 4;
   const HP_MULTIPLIER = 1.4;
+  const XP_MULTIPLIER = 0.5;
 
   // Global variables
   let currentTime = 0;
@@ -243,7 +244,7 @@ function battleClosure(user) {
     // what's the users pokemon?
     console.log('second scope')
     // generate random pokemon to fight
-    fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 9)) + 1}`)
+    fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 8)) + 1}`)
     .then(res => res.json())
     .then(enemyPokemon => {
       battle(myPokemon, enemyPokemon)
@@ -254,6 +255,7 @@ function battleClosure(user) {
     // show battle interface
 
     function battle(myPokemon, enemyPokemon) {
+
       showEnemySprite(enemyPokemon)
 
       showMySprite(myPokemon);
@@ -262,32 +264,32 @@ function battleClosure(user) {
       let currentEnemyPokemonHp = enemyPokemon.stat_hp * HP_MULTIPLIER;
 
       // Elements
-      battleButtonDiv = document.getElementById("battleButtonDiv");
-      battleStatusDisplay = document.getElementById("battleStatusDisplay");
+      let battleButtonDiv = document.getElementById("battleButtonDiv");
+      let battleStatusDisplay = document.getElementById("battleStatusDisplay");
 
       // Interface
-      attackButton = document.createElement("button");
+      let attackButton = document.createElement("button");
       attackButton.id = "attackButton";
       attackButton.innerText = "Attack";
       battleButtonDiv.appendChild(attackButton);
 
-      runButton = document.createElement("button");
+      let runButton = document.createElement("button");
       runButton.id = "runButton";
       runButton.innerText = "Run";
       battleButtonDiv.appendChild(runButton);
 
-      battleStatus = document.createElement("h2");
+      let battleStatus = document.createElement("h2");
       battleStatus.id = "battleStatus";
       battleStatus.innerText = "Give me your best shot!"
       battleStatusDisplay.appendChild(battleStatus);
       console.log(battleStatus.innerText)
 
-      myHpDisplay = document.createElement("h3");
+      let myHpDisplay = document.createElement("h3");
       myHpDisplay.id = "myHp";
       myHpDisplay.innerText = currentMyPokemonHp;
       battleStatusDisplay.appendChild(myHpDisplay);
 
-      enemyHpDisplay = document.createElement("h3");
+      let enemyHpDisplay = document.createElement("h3");
       enemyHpDisplay.id = "enemyHp";
       enemyHpDisplay.innerText = currentEnemyPokemonHp;
       battleStatusDisplay.appendChild(enemyHpDisplay);
@@ -297,22 +299,41 @@ function battleClosure(user) {
       // *** below is the battle flow ***
 
       // Attacking a Pokemon
-      console.log("(Starting) Your pokemon hp: ", currentMyPokemonHp)
-      console.log("(Starting) Enemy pokemon hp: ", currentEnemyPokemonHp)
+      console.log("(Starting) Your pokemon hp: ", currentMyPokemonHp);
+      console.log("(Starting) Enemy pokemon hp: ", currentEnemyPokemonHp);
 
       //Test
-      enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
+      // enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
+      enemyPokemon.stat_speed = 0;
       if (myPokemon.stat_speed >= enemyPokemon.stat_speed) {
         // you go first
         // choose menu options
-        console.log("You're faster! Make your move.")
+        console.log("You're faster! Make your move.");
         battleStatus.innerText = "You're faster! Make your move.";
         attackButton.addEventListener("click", attackClosure(myPokemon, enemyPokemon));
+        runButton.addEventListener("click", (event) => {
+          console.log("Live to fight another day.");
+          battleStatus.innerText = "Live to fight another day."
+          setTimeout(function () {
+            console.log("XP Gained: 0");
+            battleStatus.innerText = "XP Gained: 0";
+            document.getElementById("battleButtonDiv").innerHTML = "";
+            fightAgainButton = document.createElement("button");
+            fightAgainButton.id = "fightAgainButton";
+            fightAgainButton.innerText = "Fight again?"
+            battleButtonDiv.appendChild(fightAgainButton);
+            fightAgainButton.addEventListener("click", battleClosure(user))
+          }, 1000);
+        });
 
 
       } else {
-        // enemy goes first
 
+        setTimeout(function () {
+          console.log("Too slow! Get ready to defend.");
+          battleStatus.innerText = "Too slow! Get ready to defend.";
+          defend(enemyPokemon, myPokemon);
+        }, 1000);
       }
 
       function attackClosure(attackingPokemon, defendingPokemon) {
@@ -334,10 +355,21 @@ function battleClosure(user) {
             defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
             defend(defendingPokemon, attackingPokemon);
           } else {
-            // enemy defeated squence
-
+            defendingPokemonName = defendingPokemon.name;
+            defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
+            battleStatus.innerText = `Congratulations! You defeated the ${defendingPokemonName}.`
+            setTimeout(function () {
+              getExperience(myPokemon, enemyPokemon);
+            }, 1000);
           }
         }
+      }
+
+      function getExperience(myPokemon, enemyPokemon) {
+        xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
+        console.log(`XP Gained: ${xpGained}`);
+        battleStatus.innerText = `XP Gained: ${xpGained}`;
+
       }
 
       function defend(attackingPokemon, defendingPokemon) {
@@ -359,7 +391,7 @@ function battleClosure(user) {
           } else {
             setTimeout(function () {
               console.log("You were defeated. Sorry, but you just weren't good enough.");
-              battleStatus.innerText = "You were defeated. Sorry, but you just weren't good enough.";
+              battleStatus.innerText = "You were defeated. Sorry but you just weren't good enough.";
               setTimeout(function () {
                 location.reload();
               }, 1500);
