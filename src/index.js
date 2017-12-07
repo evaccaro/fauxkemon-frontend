@@ -312,6 +312,7 @@ function battleClosure(user) {
 
       } else {
         // enemy goes first
+
       }
 
       function attackClosure(attackingPokemon, defendingPokemon) {
@@ -332,10 +333,9 @@ function battleClosure(user) {
             defendingPokemonName = defendingPokemon.name;
             defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
             defend(defendingPokemon, attackingPokemon);
-            // enemy turn
-            // enemy attacks and you defend
           } else {
             // enemy defeated squence
+
           }
         }
       }
@@ -362,12 +362,13 @@ function battleClosure(user) {
               battleStatus.innerText = "You were defeated. Sorry, but you just weren't good enough.";
               setTimeout(function () {
                 location.reload();
-                
-              }, 2000);
-            }, 2000);
+              }, 1500);
+            }, 1500);
           }
-        }, 5000);
+        }, 3000);
       }
+
+
 
     }
     // one turn
