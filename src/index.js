@@ -92,13 +92,31 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
+  pokeSelector.addEventListener("submit", event => {
+    event.preventDefault()
+    let pokes = document.getElementById('pokes').value
+    let pokeName = document.querySelectorAll('option').innerText
+    // debugger;
+    fetch(`http://localhost:3000/users/${pokes}`, {method: "PATCH",
+    headers: {'Accept': 'application/json',
+    'Content-Type': 'application/json'},
+    body: JSON.stringify({user:{pokemon_id: pokes}})})
+    .then(res => res.json()).then(json => {pokemon = json.pokemon
+      showPoke(json, pokemon)
+      // battleButton = document.createElement('button');
+      // battleButton.id = "battleButton"
+      // battleButton.innerText = "Battle!"
+      // document.getElementById("battleButtonDiv").appendChild(battleButton);
+      // battleButton.addEventListener("click", battleClosure(json));
+    });
+  });
   function showPoke(json, pokemon){
-    debugger;
+    //debugger;
     fade(pokeSelector)
     fade(welcomeContainer)
     let newImg = document.createElement('img');
     newImg.src = "https://www.spriters-resource.com/resources/sheet_icons/4/3701.png"
-
+    console.log(json)
     let newP = document.createElement('p')
     let trainButton = document.createElement('button')
     trainButton.innerHTML = 'Train!'
@@ -107,13 +125,14 @@ document.addEventListener("DOMContentLoaded", function(){
     pokeContainer.appendChild(newImg);
     pokeContainer.appendChild(newP)
     pokeContainer.appendChild(trainButton)
-      trainButton.addEventListener('click', event => {
-        event.preventDefault();
-        fade(header)
-        fade(pokeContainer)
-        gameConsole.style.background = 'none';
-        gameCenter.append(battleCanvas)
-      })
+      // trainButton.addEventListener('click', event => {
+      //   event.preventDefault();
+      //   fade(header)
+      //   fade(pokeContainer)
+      //   gameConsole.style.background = 'none';
+      //   gameCenter.append(battleCanvas)
+      // })
+      trainButton.addEventListener("click", battleClosure(json));
   }
 
 
@@ -145,23 +164,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  pokeSelector.addEventListener("submit", event => {
-    event.preventDefault()
-    let pokes = document.getElementById('pokes').value
-    let pokeName = document.querySelectorAll('option').innerText
-    fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
-                                       headers: {'Accept': 'application/json',
-                                       'Content-Type': 'application/json'},
-                                       body: JSON.stringify({user:{pokemon_id: pokes}})})
-                                       .then(res => res.json()).then(json => {pokemon = json.pokemon
-                                         showPoke(json, pokemon)
-                                         battleButton = document.createElement('button');
-                                          battleButton.id = "battleButton"
-                                          battleButton.innerText = "Battle!"
-                                          document.getElementById("battleButtonDiv").appendChild(battleButton);
-                                          battleButton.addEventListener("click", battleClosure(json));
-                                        });
-  });
 
   function fade(element) {
       var op = 1;  // initial opacity
@@ -193,16 +195,24 @@ document.addEventListener("DOMContentLoaded", function(){
 
   let ctx = battleCanvas.getContext('2d')
 
-  function draw(){
-    // debugger;
-    ctx.beginPath();
-    ctx.fillRect(50, 450, 100, 10)
-    ctx.fillStyle = "#0095DD";
-    ctx.fillRect(650, 150, 100, 10)
-    ctx.fillStyle = "#0095DD";
-    ctx.closePath();
+  // function draw(){
+  //   // debugger;
+  //   ctx.beginPath();
+  //   ctx.fillRect(50, 450, 100, 10)
+  //   ctx.fillStyle = "#0095DD";
+  //   ctx.fillRect(650, 150, 100, 10)
+  //   ctx.fillStyle = "#0095DD";
+  //   ctx.closePath();
+  // }
+  // draw();
+
+  function showMySprite(pokemon){
+    let sprite = new Image(700, 700)
+    sprite.src = pokemon.sprite_back
+    sprite.onload = function(){
+      ctx.drawImage(sprite, 50, 450)
+    }
   }
-  draw();
 
   // const leftside = document.querySelector('#leftside')
   // const ctxL = leftside.getContext('2d')
@@ -215,22 +225,28 @@ document.addEventListener("DOMContentLoaded", function(){
   // }
   // draw()
 function battleClosure(user) {
+  let myPokemon = user.pokemon
    return function (event) {
+     event.preventDefault();
+     fade(header)
+     fade(pokeContainer)
+     gameConsole.style.background = 'none';
+     gameCenter.append(battleCanvas)
     // what's the users pokemon?
-
+    console.log('second scope')
     // generate random pokemon to fight
-    fetch(`http://localhost:3000/pokemons/${Math.floor(Math.random() * 10)}`)
+    fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 10)) + 1}`)
     .then(res => res.json())
     .then(enemyPokemon => {
-      battle(user.pokemon, enemyPokemon)
+      battle(myPokemon, enemyPokemon)
     })
 
     // show enemy pokemon
     // show user pokemon
     // show battle interface
 
-    function battle(userPokemon, enemyPokemon) {
-
+    function battle(myPokemon, enemyPokemon) {
+      showMySprite(myPokemon);
     }
     // one turn
     // ---> choose option
