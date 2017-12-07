@@ -7,10 +7,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Global variables
   let currentTime = 0;
-  let user;
+  // let user;
   let pokemon;
 
   // Element tags
+  let gameCenter = document.getElementById('gameCenter')
   let username = document.getElementById('username').value
   let usernameForm = document.getElementById('submituser')
   let welcomeContainer = document.getElementById('welcome')
@@ -21,19 +22,50 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokeContainer = document.getElementById('pokeContainer')
   let pokemonTag = document.getElementById('pokemon')
   let gameConsole = document.getElementById('gameConsole')
+  let battleCanvas =document.createElement('canvas')
+
+  //Setting the Canvas width and height
+  battleCanvas.width = "800"
+  battleCanvas.height = "600"
 
 
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
-  }
 
+  }
   hidePoke()
 
-  function findPokemonById(id){
-    fetch(`http://localhost:3000/pokemons/${id}`)
-    .then(res => res.json())
-    .then(console.log)
-  }
+  const user = usernameForm.addEventListener("submit", event => {
+    event.preventDefault()
+    let username = document.getElementById('username').value
+    fetch("http://localhost:3000/users", {method: "post",
+                                          headers: {'Accept': 'application/json','Content-Type': 'application/json'},
+                                          body: JSON.stringify({user:{name: username, pokemon_id: null}})})
+        .then(res => res.json()).then(json => greetUser(json))
+    });
+
+
+    function greetUser(username){
+      if (username.name !== ""){
+        welcomeContainer.innerText = ""
+        fade(usernameForm)
+        let newUl = document.createElement('ul')
+        newUl.innerText = `Welcome to Fauxkemon, ${username.name}`
+        welcomeContainer.appendChild(newUl)
+        unfade(holder)
+        unfade(pokemonList)
+      } else {
+        let newUl = document.createElement('ul')
+        newUl.innerText = `Please choose a username before continuing.`
+        welcomeContainer.appendChild(newUl)
+      }
+    }
+
+  // function findPokemonById(id){
+  //   fetch(`http://localhost:3000/pokemons/${id}`)
+  //   .then(res => res.json())
+  //   .then(console.log)
+  // }
 
 
 
@@ -58,24 +90,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
   createPokeOptions()
 
-  function greetUser(username){
-    if (username.name !== ""){
-      welcomeContainer.innerText = ""
-    fade(usernameForm)
-    let newUl = document.createElement('ul')
-    newUl.innerText = `Welcome to Fauxkemon, ${username.name}`
-    welcomeContainer.appendChild(newUl)
-    unfade(holder)
-    unfade(pokemonList)
-  } else {
-    let newUl = document.createElement('ul')
-    newUl.innerText = `Please choose a username before continuing.`
-    welcomeContainer.appendChild(newUl)
-  }
-  }
 
 
   function showPoke(json, pokemon){
+    debugger;
     fade(pokeSelector)
     fade(welcomeContainer)
     let newP = document.createElement('p')
@@ -90,46 +108,38 @@ document.addEventListener("DOMContentLoaded", function(){
         fade(header)
         fade(pokeContainer)
         gameConsole.style.background = 'none';
+        gameCenter.append(battleCanvas)
       })
   }
 
 
 
-  function startGame() {
-    let everySecond = setInterval(() => {
-      if (currentTime < TIME_TO_THIRD){
-        currentTime += 1;
-        // console.log(currentTime);
-        if (currentTime < TIME_TO_FIRST) {
-          // console.log("this is the first pokemon");
-          // code to change pokemon
-
-        } else {
-          // console.log("this is the second pokemon")
-          // code to change pokemon
-        }
-      }
-      else {
-        clearInterval(everySecond);
-        // console.log("Game Over")
-      }
-    }, 1000 );
-  }
-
-  startGame();
-
-
+  // function startGame() {
+  //   let everySecond = setInterval(() => {
+  //     if (currentTime < TIME_TO_THIRD){
+  //       currentTime += 1;
+  //       // console.log(currentTime);
+  //       if (currentTime < TIME_TO_FIRST) {
+  //         // console.log("this is the first pokemon");
+  //         // code to change pokemon
+  //
+  //       } else {
+  //         // console.log("this is the second pokemon")
+  //         // code to change pokemon
+  //       }
+  //     }
+  //     else {
+  //       clearInterval(everySecond);
+  //       // console.log("Game Over")
+  //     }
+  //   }, 1000 );
+  // }
+  //
+  // startGame();
 
 
-  usernameForm.addEventListener("submit", event => {
-    event.preventDefault()
-    let username = document.getElementById('username').value
-    fetch("http://localhost:3000/users", {method: "post",
-                                       headers: {'Accept': 'application/json',
-                                       'Content-Type': 'application/json'},
-                                       body: JSON.stringify({user:{name: username, pokemon_id: null}})})
-                                       .then(res => res.json()).then(json => {greetUser(json)
-                                       user = json})});
+
+
 
   pokeSelector.addEventListener("submit", event => {
     event.preventDefault()
@@ -171,16 +181,19 @@ document.addEventListener("DOMContentLoaded", function(){
     }, 10);
 }
 
-  const leftside = document.querySelector('#leftside')
-  const ctxL = leftside.getContext('2d')
+
+  let ctx = battleCanvas.getContext('2d')
 
   function draw(){
-    ctxL.beginPath();
-    ctxL.fillRect(5, 5, 100, 100)
-    ctxL.fillStyle = "#0095DD";
-    ctxL.closePath();
+    // debugger;
+    ctx.beginPath();
+    ctx.fillRect(50, 450, 100, 10)
+    ctx.fillStyle = "#0095DD";
+    ctx.fillRect(650, 150, 100, 10)
+    ctx.fillStyle = "#0095DD";
+    ctx.closePath();
   }
-  draw()
+  draw();
 
 
 });
