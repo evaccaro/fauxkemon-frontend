@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function(){
 
-  //THIS IS A TEST PUSH
-
   // App-wide constants
   const TIME_TO_FIRST = 4; // in seconds
   const TIME_TO_SECOND = TIME_TO_FIRST * 2;
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
-  const DEFENSE_MULTIPLIER = 4;
+  const DEFENSE_DIVISOR = 4;
   const HP_MULTIPLIER = 1.4;
   const XP_MULTIPLIER = 0.5;
 
@@ -27,18 +25,21 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokeContainer = document.getElementById('pokeContainer')
   let pokemonTag = document.getElementById('pokemon')
   let gameConsole = document.getElementById('gameConsole')
-  let battleCanvas = document.createElement('canvas')
-  let myHealth = document.getElementById('myHealth')
-  let enemyHealth = document.getElementById('enemyHealth')
-
+  let battleCanvas =document.createElement('canvas')
+  let firstPage = document.getElementById('firstPage')
 
   //Setting the Canvas width and height
   battleCanvas.width = "800"
   battleCanvas.height = "600"
 
+  function hideFirst(){
+    gameConsole.style.visibility = "hidden";
+  }
+
+  hideFirst()
+
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
-
   }
   hidePoke()
 
@@ -48,28 +49,7 @@ document.addEventListener("DOMContentLoaded", function(){
     fetch("http://localhost:3000/users", {method: "post",
                                           headers: {'Accept': 'application/json','Content-Type': 'application/json'},
                                           body: JSON.stringify({user:{name: username, pokemon_id: null}})})
-        .then(res => res.json()).then(user => {
-          greetUser(user)
-          pokeSelector.addEventListener("submit", event => {
-            event.preventDefault()
-            let pokes = document.getElementById('pokes').value
-            let pokeName = document.querySelectorAll('option').innerText
-            // debugger;
-            fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
-            headers: {'Accept': 'application/json',
-            'Content-Type': 'application/json'},
-            body: JSON.stringify({user:{pokemon_id: pokes}})})
-            .then(res => res.json()).then(json => {pokemon = json.pokemon
-              showPoke(json, pokemon)
-              // battleButton = document.createElement('button');
-              // battleButton.id = "battleButton"
-              // battleButton.innerText = "Battle!"
-              // document.getElementById("battleButtonDiv").appendChild(battleButton);
-              // battleButton.addEventListener("click", battleClosure(json));
-            });
-          });
-
-        })
+        .then(res => res.json()).then(json => greetUser(json))
     });
 
 
@@ -77,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function(){
       if (username.name !== ""){
         welcomeContainer.innerText = ""
         fade(usernameForm)
-        // debugger;
         let newUl = document.createElement('ul')
         newUl.innerText = `Welcome to Fauxkemon, ${username.name}`
         welcomeContainer.appendChild(newUl)
@@ -118,11 +97,33 @@ document.addEventListener("DOMContentLoaded", function(){
 
   createPokeOptions()
 
+  firstPage.addEventListener("click", event => {
+    event.preventDefault()
+    fade(firstPage)
+    setTimeout(unfade(gameConsole), 100)
+  })
 
 
-
-  function showPoke(json, pokemon){
+  pokeSelector.addEventListener("submit", event => {
+    event.preventDefault()
+    let pokes = document.getElementById('pokes').value
+    let pokeName = document.querySelectorAll('option').innerText
     // debugger;
+    fetch(`http://localhost:3000/users/${pokes}`, {method: "PATCH",
+    headers: {'Accept': 'application/json',
+    'Content-Type': 'application/json'},
+    body: JSON.stringify({user:{pokemon_id: pokes}})})
+    .then(res => res.json()).then(json => {pokemon = json.pokemon
+      showPoke(json, pokemon)
+      // battleButton = document.createElement('button');
+      // battleButton.id = "battleButton"
+      // battleButton.innerText = "Battle!"
+      // document.getElementById("battleButtonDiv").appendChild(battleButton);
+      // battleButton.addEventListener("click", battleClosure(json));
+    });
+  });
+  function showPoke(json, pokemon){
+    //debugger;
     fade(pokeSelector)
     fade(welcomeContainer)
     let newImg = document.createElement('img');
@@ -136,6 +137,13 @@ document.addEventListener("DOMContentLoaded", function(){
     pokeContainer.appendChild(newImg);
     pokeContainer.appendChild(newP)
     pokeContainer.appendChild(trainButton)
+      // trainButton.addEventListener('click', event => {
+      //   event.preventDefault();
+      //   fade(header)
+      //   fade(pokeContainer)
+      //   gameConsole.style.background = 'none';
+      //   gameCenter.append(battleCanvas)
+      // })
       trainButton.addEventListener("click", battleClosure(json));
   }
 
@@ -183,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function unfade(element) {
-    var op = 0.1;  // initial opacity
+    var op = 0.01;  // initial opacity
     element.style.display = 'block';
     var timer = setInterval(function () {
         if (op >= 1){
@@ -193,14 +201,14 @@ document.addEventListener("DOMContentLoaded", function(){
         element.style.opacity = op;
         element.style.filter = 'alpha(opacity=' + op * 100 + ")";
         op += op * 0.1;
-    }, 10);
+    }, 100);
 }
 
 
   let ctx = battleCanvas.getContext('2d')
 
   // function draw(){
-    // debugger;
+  //   // debugger;
   //   ctx.beginPath();
   //   ctx.fillRect(50, 450, 100, 10)
   //   ctx.fillStyle = "#0095DD";
@@ -209,14 +217,6 @@ document.addEventListener("DOMContentLoaded", function(){
   //   ctx.closePath();
   // }
   // draw();
-
-  function myHpBar(attackPoints, hp){
-
-  }
-
-  function enemyHpBar(attackPoints, hp){
-
-  }
 
   function showMySprite(pokemon){
     let sprite = new Image()
@@ -234,6 +234,16 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   }
 
+  // const leftside = document.querySelector('#leftside')
+  // const ctxL = leftside.getContext('2d')
+  //
+  // function draw(){
+  //   ctxL.beginPath();
+  //   ctxL.fillRect(5, 5, 100, 100)
+  //   ctxL.fillStyle = "#0095DD";
+  //   ctxL.closePath();
+  // }
+  // draw()
 function battleClosure(user) {
   let myPokemon = user.pokemon
    return function (event) {
@@ -242,9 +252,6 @@ function battleClosure(user) {
      fade(pokeContainer)
      gameConsole.style.background = 'none';
      gameCenter.append(battleCanvas)
-     //debugger;
-     myHealth.style.visibility = 'visible'
-
     // what's the users pokemon?
     console.log('second scope')
     // generate random pokemon to fight
@@ -254,9 +261,14 @@ function battleClosure(user) {
       battle(myPokemon, enemyPokemon)
     })
 
+    // show enemy pokemon
+    // show user pokemon
+    // show battle interface
+
     function battle(myPokemon, enemyPokemon) {
 
       showEnemySprite(enemyPokemon)
+
       showMySprite(myPokemon);
 
       let currentMyPokemonHp = myPokemon.stat_hp * HP_MULTIPLIER;
@@ -368,6 +380,7 @@ function battleClosure(user) {
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
         console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
+
       }
 
       function defend(attackingPokemon, defendingPokemon) {
