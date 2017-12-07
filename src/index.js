@@ -379,6 +379,7 @@ function battleClosure(user) {
       }
 
       function getExperience(myPokemon, enemyPokemon) {
+        debugger;
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
         console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
@@ -416,13 +417,6 @@ function battleClosure(user) {
 
 
     }
-    // one turn
-    // ---> choose option
-    // ---> choose do action
-    // ---> check if dead
-    // -----------> if opponent dead, generate win actions
-    // -----------> if you're dead, generate lose actions
-    // -----------> else, do another turn
 
   }
 }
