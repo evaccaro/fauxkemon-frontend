@@ -25,14 +25,20 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokemonTag = document.getElementById('pokemon')
   let gameConsole = document.getElementById('gameConsole')
   let battleCanvas =document.createElement('canvas')
+  let firstPage = document.getElementById('firstPage')
 
   //Setting the Canvas width and height
   battleCanvas.width = "800"
   battleCanvas.height = "600"
 
+  function hideFirst(){
+    gameConsole.style.visibility = "hidden";
+  }
+
+  hideFirst()
+
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
-
   }
   hidePoke()
 
@@ -90,6 +96,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
   createPokeOptions()
 
+  firstPage.addEventListener("click", event => {
+    event.preventDefault()
+    fade(firstPage)
+    setTimeout(unfade(gameConsole), 100)
+  })
 
 
   pokeSelector.addEventListener("submit", event => {
@@ -179,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function unfade(element) {
-    var op = 0.1;  // initial opacity
+    var op = 0.01;  // initial opacity
     element.style.display = 'block';
     var timer = setInterval(function () {
         if (op >= 1){
@@ -189,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function(){
         element.style.opacity = op;
         element.style.filter = 'alpha(opacity=' + op * 100 + ")";
         op += op * 0.1;
-    }, 10);
+    }, 100);
 }
 
 
@@ -362,7 +373,7 @@ function battleClosure(user) {
               battleStatus.innerText = "You were defeated. Sorry, but you just weren't good enough.";
               setTimeout(function () {
                 location.reload();
-                
+
               }, 2000);
             }, 2000);
           }

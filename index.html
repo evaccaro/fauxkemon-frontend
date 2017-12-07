@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link href="https://fonts.googleapis.com/css?family=Lobster|Pacifico|Yanone+Kaffeesatz" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Yanone+Kaffeesatz" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <!-- positioning stuff on the page
@@ -14,6 +14,8 @@ position: relative -->
   <style>
     /* Remove the navbar's default margin-bottom and rounded borders */
     .navbar {
+     font-family: 'Yanone Kaffeesatz', sans-serif;
+     font-size: 20px;
       margin-bottom: 0;
       border-radius: 0;
     }
@@ -23,8 +25,13 @@ position: relative -->
     }
 
     #Header{
-      font-family: 'Lobster', cursive;
-      font-size: 60px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 30px;
+    }
+
+    #subheader{
+      font-family: 'Press Start 2P', cursive;
+      font-size: 20px;
     }
 
     #submituser{
@@ -63,6 +70,11 @@ position: relative -->
     #gameConsole{
       background: url('http://news.coral.co.uk/live/wp-content/uploads/2016/07/landscape-1456483171-pokemon2-1280x531.jpg')
     }
+
+
+
+
+
     /* Set black background color, white text and some padding */
     footer {
       background-color: #555;
@@ -93,6 +105,12 @@ position: relative -->
         </ul>
       </div>
     </nav>
+    <div id="firstPage"class="container-fluid">
+      <br>
+      <br>
+      <br>
+      <center><img src='https://forums.windowscentral.com/attachments/nokia-glance-backgrounds/45742d1381464991t-pokeball-glance.png'></center>
+    </div>
 
     <div id="gameConsole"class="container-fluid text-center">
       <div class="row content">
@@ -101,8 +119,11 @@ position: relative -->
         </div> -->
     <div id="gameCenter" class="col-sm-12 text-center">
       <div id="Header">
-        <p><i>Fauxkemon</i></p>
-        <h2><i>You can only catch one!</i></h2>
+        <p>Fauxkemon</p>
+      </div>
+
+      <div id="subheader">
+        <p>You can only catch one!</p>
       </div>
 
       <div class="username">
@@ -123,7 +144,7 @@ position: relative -->
       <div id="holder">
       <div class="pokemon-dropdown" id="pokemonList">
         <form id="pokeSelector">
-          <p>Select a pokemon to grow, train and fight with:</p>
+          <p>Select a pokemon to battle with:</p>
 
           <select id="pokes">
 
