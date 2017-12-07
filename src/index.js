@@ -207,10 +207,18 @@ document.addEventListener("DOMContentLoaded", function(){
   // draw();
 
   function showMySprite(pokemon){
-    let sprite = new Image(700, 700)
+    let sprite = new Image()
     sprite.src = pokemon.sprite_back
     sprite.onload = function(){
-      ctx.drawImage(sprite, 50, 450)
+      ctx.drawImage(sprite, 0, 200, 450, 450)
+    }
+  }
+
+  function showEnemySprite(pokemon){
+    let sprite = new Image()
+    sprite.src = pokemon.sprite_front
+    sprite.onload = function(){
+      ctx.drawImage(sprite, 600, 0, 200, 200)
     }
   }
 
@@ -235,7 +243,7 @@ function battleClosure(user) {
     // what's the users pokemon?
     console.log('second scope')
     // generate random pokemon to fight
-    fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 10)) + 1}`)
+    fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 9)) + 1}`)
     .then(res => res.json())
     .then(enemyPokemon => {
       battle(myPokemon, enemyPokemon)
@@ -246,6 +254,7 @@ function battleClosure(user) {
     // show battle interface
 
     function battle(myPokemon, enemyPokemon) {
+      showEnemySprite(enemyPokemon)
       showMySprite(myPokemon);
     }
     // one turn
