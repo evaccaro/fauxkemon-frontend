@@ -49,10 +49,30 @@ document.addEventListener("DOMContentLoaded", function(){
     fetch("http://localhost:3000/users", {method: "post",
                                           headers: {'Accept': 'application/json','Content-Type': 'application/json'},
                                           body: JSON.stringify({user:{name: username, pokemon_id: null}})})
-        .then(res => res.json()).then(json => greetUser(json))
-    });
 
 
+    .then(res => res.json()).then(user => {
+      greetUser(user)
+      pokeSelector.addEventListener("submit", event => {
+        event.preventDefault()
+        let pokes = document.getElementById('pokes').value
+        let pokeName = document.querySelectorAll('option').innerText
+        // debugger;
+        fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
+        headers: {'Accept': 'application/json',
+        'Content-Type': 'application/json'},
+        body: JSON.stringify({user:{pokemon_id: pokes}})})
+        .then(res => res.json()).then(json => {pokemon = json.pokemon
+          showPoke(json, pokemon)
+          // battleButton = document.createElement('button');
+          // battleButton.id = "battleButton"
+          // battleButton.innerText = "Battle!"
+          // document.getElementById("battleButtonDiv").appendChild(battleButton);
+          // battleButton.addEventListener("click", battleClosure(json));
+        });
+      });
+    })
+  });
     function greetUser(username){
       if (username.name !== ""){
         welcomeContainer.innerText = ""
@@ -104,24 +124,6 @@ document.addEventListener("DOMContentLoaded", function(){
   })
 
 
-  pokeSelector.addEventListener("submit", event => {
-    event.preventDefault()
-    let pokes = document.getElementById('pokes').value
-    let pokeName = document.querySelectorAll('option').innerText
-    // debugger;
-    fetch(`http://localhost:3000/users/${pokes}`, {method: "PATCH",
-    headers: {'Accept': 'application/json',
-    'Content-Type': 'application/json'},
-    body: JSON.stringify({user:{pokemon_id: pokes}})})
-    .then(res => res.json()).then(json => {pokemon = json.pokemon
-      showPoke(json, pokemon)
-      // battleButton = document.createElement('button');
-      // battleButton.id = "battleButton"
-      // battleButton.innerText = "Battle!"
-      // document.getElementById("battleButtonDiv").appendChild(battleButton);
-      // battleButton.addEventListener("click", battleClosure(json));
-    });
-  });
   function showPoke(json, pokemon){
     //debugger;
     fade(pokeSelector)
