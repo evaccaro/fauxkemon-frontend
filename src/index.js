@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function(){
   const TIME_TO_FIRST = 4; // in seconds
   const TIME_TO_SECOND = TIME_TO_FIRST * 2;
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
-  const DEFENSE_MULTIPLIER = 4;
+  const DEFENSE_DIVISOR = 4;
   const HP_MULTIPLIER = 1.4;
 
   // Global variables
@@ -246,7 +246,121 @@ function battleClosure(user) {
     // show battle interface
 
     function battle(myPokemon, enemyPokemon) {
+
+
       showMySprite(myPokemon);
+
+      let currentMyPokemonHp = myPokemon.stat_hp * HP_MULTIPLIER;
+      let currentEnemyPokemonHp = enemyPokemon.stat_hp * HP_MULTIPLIER;
+
+      // Elements
+      battleButtonDiv = document.getElementById("battleButtonDiv");
+      battleStatusDisplay = document.getElementById("battleStatusDisplay");
+
+      // Interface
+      attackButton = document.createElement("button");
+      attackButton.id = "attackButton";
+      attackButton.innerText = "Attack";
+      battleButtonDiv.appendChild(attackButton);
+
+      runButton = document.createElement("button");
+      runButton.id = "runButton";
+      runButton.innerText = "Run";
+      battleButtonDiv.appendChild(runButton);
+
+      battleStatus = document.createElement("h2");
+      battleStatus.id = "battleStatus";
+      battleStatus.innerText = "Give me your best shot!"
+      battleStatusDisplay.appendChild(battleStatus);
+      console.log(battleStatus.innerText)
+
+      myHpDisplay = document.createElement("h3");
+      myHpDisplay.id = "myHp";
+      myHpDisplay.innerText = currentMyPokemonHp;
+      battleStatusDisplay.appendChild(myHpDisplay);
+
+      enemyHpDisplay = document.createElement("h3");
+      enemyHpDisplay.id = "enemyHp";
+      enemyHpDisplay.innerText = currentEnemyPokemonHp;
+      battleStatusDisplay.appendChild(enemyHpDisplay);
+
+      // Need to add a run event listener
+
+      // *** below is the battle flow ***
+
+      // Attacking a Pokemon
+      console.log("(Starting) Your pokemon hp: ", currentMyPokemonHp)
+      console.log("(Starting) Enemy pokemon hp: ", currentEnemyPokemonHp)
+
+      //Test
+      enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
+      if (myPokemon.stat_speed >= enemyPokemon.stat_speed) {
+        // you go first
+        // choose menu options
+        console.log("You're faster! Make your move.")
+        battleStatus.innerText = "You're faster! Make your move.";
+        attackButton.addEventListener("click", attackClosure(myPokemon, enemyPokemon));
+
+
+      } else {
+        // enemy goes first
+      }
+
+      function attackClosure(attackingPokemon, defendingPokemon) {
+        return function attack (event) {
+          attackButton.removeEventListener("click", attack);
+
+          let damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
+          currentEnemyPokemonHp -= damage;
+
+          battleStatus.innerText = `You attacked! You dealt ${damage} damage.`;
+          myHpDisplay.innerText = currentMyPokemonHp;
+          enemyHpDisplay.innerText = currentEnemyPokemonHp;
+          console.log(`You attacked! You dealt ${damage} damage.`)
+          console.log("Your HP: ", currentMyPokemonHp)
+          console.log("Enemy HP: ", currentEnemyPokemonHp)
+
+          if (currentEnemyPokemonHp > 0) {
+            defendingPokemonName = defendingPokemon.name;
+            defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
+            defend(defendingPokemon, attackingPokemon);
+            // enemy turn
+            // enemy attacks and you defend
+          } else {
+            // enemy defeated squence
+          }
+        }
+      }
+
+      function defend(attackingPokemon, defendingPokemon) {
+        setTimeout(() => {
+          damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
+          currentMyPokemonHp -= damage;
+          battleStatus.innerText = `${defendingPokemonName} attacks and deals ${damage}`;
+          myHpDisplay.innerText = currentMyPokemonHp;
+          enemyHpDisplay.innerText = currentEnemyPokemonHp;
+          console.log(`${defendingPokemonName} attacks and deals ${damage}`)
+          console.log("Your HP: ", currentMyPokemonHp)
+          console.log("Enemy HP: ", currentEnemyPokemonHp)
+          if (currentMyPokemonHp > 0) {
+            setTimeout(function () {
+              console.log("It's your move.")
+              battleStatus.innerText = "It's your move.";
+              attackButton.addEventListener("click", attackClosure(defendingPokemon, attackingPokemon))
+            }, 2000);
+          } else {
+            setTimeout(function () {
+              console.log("You were defeated. Sorry, but you just weren't good enough.");
+              battleStatus.innerText = "You were defeated. Sorry, but you just weren't good enough.";
+              setTimeout(function () {
+                location.reload();
+                
+              }, 2000);
+            }, 2000);
+          }
+        }, 5000);
+      }
+
     }
     // one turn
     // ---> choose option
