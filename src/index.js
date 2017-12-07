@@ -13,18 +13,17 @@ document.addEventListener("DOMContentLoaded", function(){
   let pokemon;
 
   // Element tags
-  let username = document.getElementById('username').value;
-  let usernameForm = document.getElementById('submituser');
-  let welcomeContainer = document.getElementById('welcome');
-  let pokemonList = document.getElementById('pokemonList');
-  let pokemons = document.getElementById('pokes');
-  let pokeSelector = document.getElementById('pokeSelector');
-  let pokeContainer = document.getElementById('pokeContainer');
-  let pokemonTag = document.getElementById('pokemon');
-  // let battleButton = document.getElementById('battleButton');
 
-  // Event handlers
-  // battleButton.addEventListener("click", battle);
+  let username = document.getElementById('username').value
+  let usernameForm = document.getElementById('submituser')
+  let welcomeContainer = document.getElementById('welcome')
+  let header = document.getElementById('Header')
+  let pokemonList = document.getElementById('pokemonList')
+  let pokemons = document.getElementById('pokes')
+  let pokeSelector = document.getElementById('pokeSelector')
+  let pokeContainer = document.getElementById('pokeContainer')
+  let pokemonTag = document.getElementById('pokemon')
+  let gameConsole = document.getElementById('gameConsole')
 
   function hidePoke(){
     pokemonList.style.visibility = "hidden";
@@ -37,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function(){
     .then(res => res.json())
     .then(json => json)
   }
+
 
   function showObject(allPoke){
     allPoke.forEach(poke => {
@@ -60,24 +60,43 @@ document.addEventListener("DOMContentLoaded", function(){
   createPokeOptions()
 
   function greetUser(username){
-    usernameForm.style.visibility = "hidden";
+    if (username.name !== ""){
+      welcomeContainer.innerText = ""
+    fade(usernameForm)
     let newUl = document.createElement('ul')
     newUl.innerText = `Welcome to Fauxkemon, ${username.name}`
     welcomeContainer.appendChild(newUl)
-    pokemonList.style.visibility = "visible"
+    unfade(holder)
+    unfade(pokemonList)
+  } else {
+    let newUl = document.createElement('ul')
+    newUl.innerText = `Please choose a username before continuing.`
+    welcomeContainer.appendChild(newUl)
+  }
   }
 
+
   function showPoke(json, pokemon){
-    pokeSelector.style.visibility = "hidden";
-    welcomeContainer.style.visibility = "hidden";
+    fade(pokeSelector)
+    fade(welcomeContainer)
     let newImg = document.createElement('img');
     newImg.src = "https://www.spriters-resource.com/resources/sheet_icons/4/3701.png"
+
     let newP = document.createElement('p')
+    let trainButton = document.createElement('button')
+    trainButton.innerHTML = 'Train!'
+    trainButton.id = 'Train'
     newP.innerText = `Great choice, ${json.name}! Get ready to train ${pokemon.name}`
     pokeContainer.appendChild(newImg);
     pokeContainer.appendChild(newP)
+    pokeContainer.appendChild(trainButton)
+      trainButton.addEventListener('click', event => {
+        event.preventDefault();
+        fade(header)
+        fade(pokeContainer)
+        gameConsole.style.background = 'none';
+      })
   }
-
 
 
 
@@ -135,7 +154,32 @@ document.addEventListener("DOMContentLoaded", function(){
                                         });
   });
 
+  function fade(element) {
+      var op = 1;  // initial opacity
+      var timer = setInterval(function () {
+          if (op <= 0.1){
+              clearInterval(timer);
+              element.style.display = 'none';
+          }
+          element.style.opacity = op;
+          element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+          op -= op * 0.1;
+      }, 50);
+  }
 
+  function unfade(element) {
+    var op = 0.1;  // initial opacity
+    element.style.display = 'block';
+    var timer = setInterval(function () {
+        if (op >= 1){
+            clearInterval(timer);
+        }
+        element.style.visibility = "visible";
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.1;
+    }, 10);
+}
 
   // const leftside = document.querySelector('#leftside')
   // const ctxL = leftside.getContext('2d')
