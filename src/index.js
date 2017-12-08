@@ -281,11 +281,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function clearMySprite(pokemon){
-    let sprite = new Image()
-    sprite.src = ""
-    sprite.onload = function(){
-      ctx.drawImage(sprite, 0, 200, 450, 450)
-    }
+    ctx.clearRect(0, 200, 450, 450)
   }
 
   function clearEnemySprite(){
@@ -327,6 +323,7 @@ function battleClosure(user) {
 
       // clearMySprite(myPokemon)
       clearEnemySprite()
+      clearMySprite()
       showEnemySprite(enemyPokemon)
       showMySprite(myPokemon);
       myInitHealth()
@@ -459,9 +456,9 @@ function battleClosure(user) {
           damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
           currentMyPokemonHp -= damage;
 
-          let minusBy = (damage * 100)/currentEnemyPokemonHp
+          let minusMineBy = (damage * 100)/currentMyPokemonHp
           currentEnemyPokemonHp -= damage;
-            for(let i=0; i<minusBy; i++){
+            for(let i=0; i<minusMineBy; i++){
               loseMyHealth()
             }
             // debugger;
