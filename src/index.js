@@ -50,6 +50,30 @@ document.addEventListener("DOMContentLoaded", function(){
                                           headers: {'Accept': 'application/json','Content-Type': 'application/json'},
                                           body: JSON.stringify({user:{name: username, pokemon_id: null}})})
 
+        .then(res => res.json()).then(user => {
+          greetUser(user)
+          pokeSelector.addEventListener("submit", event => {
+            event.preventDefault()
+            let pokes = document.getElementById('pokes').value
+            let pokeName = document.querySelectorAll('option').innerText
+            // debugger;
+            fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
+            headers: {'Accept': 'application/json',
+            'Content-Type': 'application/json'},
+            body: JSON.stringify({user:{pokemon_id: pokes}})})
+            .then(res => res.json()).then(json => {pokemon = json.pokemon
+              showPoke(json, pokemon)
+              // battleButton = document.createElement('button');
+              // battleButton.id = "battleButton"
+              // battleButton.innerText = "Battle!"
+              // document.getElementById("battleButtonDiv").appendChild(battleButton);
+              // battleButton.addEventListener("click", battleClosure(json));
+            });
+          });
+        })
+    });
+
+
 
     .then(res => res.json()).then(user => {
       greetUser(user)
@@ -220,6 +244,49 @@ document.addEventListener("DOMContentLoaded", function(){
   // }
   // draw();
 
+  function myInitHealth(){
+    ctx.beginPath();
+    ctx.fillStyle = 'green'
+    ctx.fillRect(125, 315, 100, 10);
+    ctx.closePath()
+  }
+
+  function enemyInitHealth(){
+    ctx.beginPath();
+    ctx.fillStyle = 'green'
+    ctx.fillRect(650, 175, 100, 10);
+    ctx.closePath()
+  }
+
+  let myX = 225
+  let myDx = -1
+  let EnemyX = 650
+  let EnemyDx = 1
+
+  function drawMyHealthLoss(){
+    ctx.beginPath();
+    ctx.fillStyle = 'red'
+    ctx.fillRect(myX, 315, 1, 10)
+    ctx.closePath();
+  }
+
+  function drawEnemyHealthLoss(){
+    ctx.beginPath();
+    ctx.fillStyle = 'red'
+    ctx.fillRect(EnemyX, 175, 1, 10)
+    ctx.closePath();
+  }
+
+  function loseEnemyHealth(){
+    drawEnemyHealthLoss()
+    EnemyX += EnemyDx
+  }
+
+  function loseMyHealth(){
+    drawMyHealthLoss();
+    myX += myDx;
+  }
+
   function showMySprite(pokemon){
     let sprite = new Image()
     sprite.src = pokemon.sprite_back
@@ -234,6 +301,18 @@ document.addEventListener("DOMContentLoaded", function(){
     sprite.onload = function(){
       ctx.drawImage(sprite, 600, 0, 200, 200)
     }
+  }
+
+  function clearMySprite(pokemon){
+    let sprite = new Image()
+    sprite.src = ""
+    sprite.onload = function(){
+      ctx.drawImage(sprite, 0, 200, 450, 450)
+    }
+  }
+
+  function clearEnemySprite(){
+    ctx.clearRect(600,0,200, 200)
   }
 
   // const leftside = document.querySelector('#leftside')
@@ -269,9 +348,12 @@ function battleClosure(user) {
 
     function battle(myPokemon, enemyPokemon) {
 
+      // clearMySprite(myPokemon)
+      clearEnemySprite()
       showEnemySprite(enemyPokemon)
-
       showMySprite(myPokemon);
+      myInitHealth()
+      enemyInitHealth()
 
       let currentMyPokemonHp = myPokemon.stat_hp * HP_MULTIPLIER;
       let currentEnemyPokemonHp = enemyPokemon.stat_hp * HP_MULTIPLIER;
@@ -350,18 +432,24 @@ function battleClosure(user) {
       }
 
       function attackClosure(attackingPokemon, defendingPokemon) {
+
         return function attack (event) {
           attackButton.removeEventListener("click", attack);
-
           let damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
+          let minusBy = (damage * 100)/currentEnemyPokemonHp
           currentEnemyPokemonHp -= damage;
+
+            for(let i=0; i<minusBy; i++){
+              loseEnemyHealth()
+            }
+            //debugger;
 
           battleStatus.innerText = `You attacked! You dealt ${damage} damage.`;
           myHpDisplay.innerText = currentMyPokemonHp;
           enemyHpDisplay.innerText = currentEnemyPokemonHp;
-          console.log(`You attacked! You dealt ${damage} damage.`)
-          console.log("Your HP: ", currentMyPokemonHp)
-          console.log("Enemy HP: ", currentEnemyPokemonHp)
+          // console.log(`You attacked! You dealt ${damage} damage.`)
+          // console.log("Your HP: ", currentMyPokemonHp)
+          // console.log("Enemy HP: ", currentEnemyPokemonHp)
 
           if (currentEnemyPokemonHp > 0) {
             defendingPokemonName = defendingPokemon.name;
@@ -375,12 +463,16 @@ function battleClosure(user) {
               getExperience(myPokemon, enemyPokemon);
             }, 1000);
           }
+
+
+
+          //setInterval(loseMyHealth, 20)
         }
       }
 
       function getExperience(myPokemon, enemyPokemon) {
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
-        console.log(`XP Gained: ${xpGained}`);
+        //console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
 
       }
@@ -389,12 +481,21 @@ function battleClosure(user) {
         setTimeout(() => {
           damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
           currentMyPokemonHp -= damage;
+
+          let minusBy = (damage * 100)/currentEnemyPokemonHp
+          currentEnemyPokemonHp -= damage;
+            for(let i=0; i<minusBy; i++){
+              loseMyHealth()
+            }
+            // debugger;
+
+
           battleStatus.innerText = `${defendingPokemonName} attacks and deals ${damage}`;
           myHpDisplay.innerText = currentMyPokemonHp;
           enemyHpDisplay.innerText = currentEnemyPokemonHp;
-          console.log(`${defendingPokemonName} attacks and deals ${damage}`)
-          console.log("Your HP: ", currentMyPokemonHp)
-          console.log("Enemy HP: ", currentEnemyPokemonHp)
+          // console.log(`${defendingPokemonName} attacks and deals ${damage}`)
+          // console.log("Your HP: ", currentMyPokemonHp)
+          // console.log("Enemy HP: ", currentEnemyPokemonHp)
           if (currentMyPokemonHp > 0) {
             setTimeout(function () {
               console.log("It's your move.")
