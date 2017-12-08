@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function(){
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
   const DEFENSE_DIVISOR = 4;
   const HP_MULTIPLIER = 1.4;
-  const XP_MULTIPLIER = 0.5;
+  const XP_MULTIPLIER = 0.75;
 
   // Global variables
   let currentTime = 0;
@@ -125,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
   function showPoke(json, pokemon){
-    //debugger;
     fade(pokeSelector)
     fade(welcomeContainer)
     let newImg = document.createElement('img');
@@ -254,8 +253,6 @@ function battleClosure(user) {
      fade(pokeContainer)
      gameConsole.style.background = 'none';
      gameCenter.append(battleCanvas)
-    // what's the users pokemon?
-    console.log('second scope')
     // generate random pokemon to fight
     fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 8)) + 1}`)
     .then(res => res.json())
@@ -379,11 +376,51 @@ function battleClosure(user) {
       }
 
       function getExperience(myPokemon, enemyPokemon) {
-        debugger;
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
         console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
+        user.experience_level += xpGained;
+        console.log(xpGained);
+        console.log(user.experience_level);
+        console.log(user.pokemon.evolution_level);
+        if (user.pokemon.evolution_level < 3) {
+          fetch('http://localhost:3000/pokemons')
+            .then(response => response.json())
+            .then(allPokemon => {
+              evolvedPokemon = allPokemon.find(element => element.id === (user.pokemon.id + 1))
+              if (user.experience_level >= evolvedPokemon.base_experience) {
+                evolve();
+              } else {
+                setTimeout(function () {
+                  document.getElementById("battleButtonDiv").innerHTML = "";
+                  fightAgainButton = document.createElement("button");
+                  fightAgainButton.id = "fightAgainButton";
+                  fightAgainButton.innerText = "Fight again?"
+                  battleButtonDiv.appendChild(fightAgainButton);
+                  fightAgainButton.addEventListener("click", battleClosure(user))
+                }, 1000);
+              }});
+        }
+      }
 
+      function evolve() {
+        console.log("You've evolved!")
+        console.log(user)
+        // DO STUFF
+        battleStatus.innerText = "Through your trials and tribulations, you have gained enough experience to evolve.";
+        //  > display message
+        debugger;
+        user.pokemon = evolvedPokemon;
+        console.log(user)
+        setTimeout(function () {
+          document.getElementById("battleButtonDiv").innerHTML = "";
+          fightAgainButton = document.createElement("button");
+          fightAgainButton.id = "fightAgainButton";
+          fightAgainButton.innerText = "Fight again?"
+          battleButtonDiv.appendChild(fightAgainButton);
+          fightAgainButton.addEventListener("click", battleClosure(user))
+          debugger;
+        }, 1000);
       }
 
       function defend(attackingPokemon, defendingPokemon) {
