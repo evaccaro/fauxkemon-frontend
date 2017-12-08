@@ -308,7 +308,7 @@ function battleClosure(user) {
 
       //Test
       // enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
-      enemyPokemon.stat_speed = 0;
+      // enemyPokemon.stat_speed = 0;
       if (myPokemon.stat_speed >= enemyPokemon.stat_speed) {
         // you go first
         // choose menu options
