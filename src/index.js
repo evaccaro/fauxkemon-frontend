@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", function(){
   const TIME_TO_THIRD = TIME_TO_SECOND * 2;
   const DEFENSE_DIVISOR = 4;
   const HP_MULTIPLIER = 1.4;
-  const XP_MULTIPLIER = 0.5;
+  const XP_MULTIPLIER = 0.75;
+
   // Global variables
   let currentTime = 0;
   // let user;
@@ -42,28 +43,24 @@ document.addEventListener("DOMContentLoaded", function(){
     fetch("http://localhost:3000/users", {method: "post",
                                           headers: {'Accept': 'application/json','Content-Type': 'application/json'},
                                           body: JSON.stringify({user:{name: username, pokemon_id: null}})})
-        .then(res => res.json()).then(user => {
-          greetUser(user)
-          pokeSelector.addEventListener("submit", event => {
-            event.preventDefault()
-            let pokes = document.getElementById('pokes').value
-            let pokeName = document.querySelectorAll('option').innerText
-            // debugger;
-            fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
-            headers: {'Accept': 'application/json',
-            'Content-Type': 'application/json'},
-            body: JSON.stringify({user:{pokemon_id: pokes}})})
-            .then(res => res.json()).then(json => {pokemon = json.pokemon
-              showPoke(json, pokemon)
-              // battleButton = document.createElement('button');
-              // battleButton.id = "battleButton"
-              // battleButton.innerText = "Battle!"
-              // document.getElementById("battleButtonDiv").appendChild(battleButton);
-              // battleButton.addEventListener("click", battleClosure(json));
-            });
-          });
-        })
-    });
+      .then(res => res.json()).then(user => {
+      greetUser(user)
+      pokeSelector.addEventListener("submit", event => {
+        event.preventDefault()
+        let pokes = document.getElementById('pokes').value
+        let pokeName = document.querySelectorAll('option').innerText
+        fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
+        headers: {'Accept': 'application/json',
+        'Content-Type': 'application/json'},
+        body: JSON.stringify({user:{pokemon_id: pokes}})})
+        .then(res => res.json()).then(json => {pokemon = json.pokemon
+          showPoke(json, pokemon)
+        });
+      });
+    })
+  });
+
+  
     function greetUser(username){
       if (username.name !== ""){
         welcomeContainer.innerText = ""
@@ -109,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function(){
     setTimeout(unfade(gameConsole), 100)
   })
   function showPoke(json, pokemon){
-    //debugger;
     fade(pokeSelector)
     fade(welcomeContainer)
     let newImg = document.createElement('img');
@@ -183,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function(){
 }
   let ctx = battleCanvas.getContext('2d')
   // function draw(){
-  //   // debugger;
+  //   //
   //   ctx.beginPath();
   //   ctx.fillRect(50, 450, 100, 10)
   //   ctx.fillStyle = "#0095DD";
@@ -192,6 +188,50 @@ document.addEventListener("DOMContentLoaded", function(){
   //   ctx.closePath();
   // }
   // draw();
+
+  function myInitHealth(){
+    ctx.beginPath();
+    ctx.fillStyle = 'green'
+    ctx.fillRect(125, 315, 100, 10);
+    ctx.closePath()
+  }
+
+  function enemyInitHealth(){
+    ctx.beginPath();
+    ctx.fillStyle = 'green'
+    ctx.fillRect(650, 175, 100, 10);
+    ctx.closePath()
+  }
+
+  let myX = 225
+  let myDx = -1
+  let EnemyX = 650
+  let EnemyDx = 1
+
+  function drawMyHealthLoss(){
+    ctx.beginPath();
+    ctx.fillStyle = 'red'
+    ctx.fillRect(myX, 315, 1, 10)
+    ctx.closePath();
+  }
+
+  function drawEnemyHealthLoss(){
+    ctx.beginPath();
+    ctx.fillStyle = 'red'
+    ctx.fillRect(EnemyX, 175, 1, 10)
+    ctx.closePath();
+  }
+
+  function loseEnemyHealth(){
+    drawEnemyHealthLoss()
+    EnemyX += EnemyDx
+  }
+
+  function loseMyHealth(){
+    drawMyHealthLoss();
+    myX += myDx;
+  }
+
   function showMySprite(pokemon){
     let sprite = new Image()
     sprite.src = pokemon.sprite_back
@@ -206,6 +246,20 @@ document.addEventListener("DOMContentLoaded", function(){
       ctx.drawImage(sprite, 600, 0, 200, 200)
     }
   }
+
+  function clearMySprite(pokemon){
+    let sprite = new Image()
+    sprite.src = ""
+    sprite.onload = function(){
+      ctx.drawImage(sprite, 0, 200, 450, 450)
+    }
+  }
+
+  function clearEnemySprite(){
+    ctx.clearRect(600,0,200, 200)
+  }
+
+
   // const leftside = document.querySelector('#leftside')
   // const ctxL = leftside.getContext('2d')
   //
@@ -228,8 +282,6 @@ function battleClosure(user) {
      setTimeout(unfade(gameConsole), 100)
      gameConsole.style.background = 'none';
      gameCenter.append(battleCanvas)
-    // what's the users pokemon?
-    console.log('second scope')
     // generate random pokemon to fight
     fetch(`http://localhost:3000/pokemons/${(Math.floor(Math.random() * 8)) + 1}`)
     .then(res => res.json())
@@ -241,8 +293,12 @@ function battleClosure(user) {
     // show battle interface
     function battle(myPokemon, enemyPokemon) {
 
+      // clearMySprite(myPokemon)
+      clearEnemySprite()
       showEnemySprite(enemyPokemon)
       showMySprite(myPokemon);
+      myInitHealth()
+      enemyInitHealth()
 
 
 
@@ -281,7 +337,7 @@ function battleClosure(user) {
       console.log("(Starting) Enemy pokemon hp: ", currentEnemyPokemonHp);
       //Test
       // enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
-      enemyPokemon.stat_speed = 0;
+      // enemyPokemon.stat_speed = 0;
       if (myPokemon.stat_speed >= enemyPokemon.stat_speed) {
         // you go first
         // choose menu options
@@ -314,16 +370,25 @@ function battleClosure(user) {
         }, 1000);
       }
       function attackClosure(attackingPokemon, defendingPokemon) {
+
         return function attack (event) {
           attackButton.removeEventListener("click", attack);
           let damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
+          let minusBy = (damage * 100)/currentEnemyPokemonHp
           currentEnemyPokemonHp -= damage;
+
+            for(let i=0; i<minusBy; i++){
+              loseEnemyHealth()
+            }
+            //debugger;
+
           battleStatus.innerText = `You attacked! You dealt ${damage} damage.`;
           myHpDisplay.innerText = currentMyPokemonHp;
           enemyHpDisplay.innerText = currentEnemyPokemonHp;
-          console.log(`You attacked! You dealt ${damage} damage.`)
-          console.log("Your HP: ", currentMyPokemonHp)
-          console.log("Enemy HP: ", currentEnemyPokemonHp)
+          // console.log(`You attacked! You dealt ${damage} damage.`)
+          // console.log("Your HP: ", currentMyPokemonHp)
+          // console.log("Enemy HP: ", currentEnemyPokemonHp)
+
           if (currentEnemyPokemonHp > 0) {
             defendingPokemonName = defendingPokemon.name;
             defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
@@ -336,23 +401,80 @@ function battleClosure(user) {
               getExperience(myPokemon, enemyPokemon);
             }, 1000);
           }
+
+
+
+          //setInterval(loseMyHealth, 20)
         }
       }
       function getExperience(myPokemon, enemyPokemon) {
         xpGained = enemyPokemon.base_experience * XP_MULTIPLIER;
-        console.log(`XP Gained: ${xpGained}`);
+        //console.log(`XP Gained: ${xpGained}`);
         battleStatus.innerText = `XP Gained: ${xpGained}`;
+
+        user.experience_level += xpGained;
+        console.log(xpGained);
+        console.log(user.experience_level);
+        console.log(user.pokemon.evolution_level);
+        if (user.pokemon.evolution_level < 3) {
+          fetch('http://localhost:3000/pokemons')
+            .then(response => response.json())
+            .then(allPokemon => {
+              evolvedPokemon = allPokemon.find(element => element.id === (user.pokemon.id + 1))
+              if (user.experience_level >= evolvedPokemon.base_experience) {
+                evolve();
+              } else {
+                setTimeout(function () {
+                  document.getElementById("battleButtonDiv").innerHTML = "";
+                  fightAgainButton = document.createElement("button");
+                  fightAgainButton.id = "fightAgainButton";
+                  fightAgainButton.innerText = "Fight again?"
+                  battleButtonDiv.appendChild(fightAgainButton);
+                  fightAgainButton.addEventListener("click", battleClosure(user))
+                }, 1000);
+              }});
+        }
+      }
+
+      function evolve() {
+        console.log("You've evolved!")
+        console.log(user)
+        // DO STUFF
+        battleStatus.innerText = "Through your trials and tribulations, you have gained enough experience to evolve.";
+        //  > display message
+
+        user.pokemon = evolvedPokemon;
+        console.log(user)
+        setTimeout(function () {
+          document.getElementById("battleButtonDiv").innerHTML = "";
+          fightAgainButton = document.createElement("button");
+          fightAgainButton.id = "fightAgainButton";
+          fightAgainButton.innerText = "Fight again?"
+          battleButtonDiv.appendChild(fightAgainButton);
+          fightAgainButton.addEventListener("click", battleClosure(user))
+
+        }, 1000);
+
       }
       function defend(attackingPokemon, defendingPokemon) {
         setTimeout(() => {
           damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
           currentMyPokemonHp -= damage;
+
+          let minusBy = (damage * 100)/currentEnemyPokemonHp
+          currentEnemyPokemonHp -= damage;
+            for(let i=0; i<minusBy; i++){
+              loseMyHealth()
+            }
+            // debugger;
+
+
           battleStatus.innerText = `${defendingPokemonName} attacks and deals ${damage}`;
           myHpDisplay.innerText = currentMyPokemonHp;
           enemyHpDisplay.innerText = currentEnemyPokemonHp;
-          console.log(`${defendingPokemonName} attacks and deals ${damage}`)
-          console.log("Your HP: ", currentMyPokemonHp)
-          console.log("Enemy HP: ", currentEnemyPokemonHp)
+          // console.log(`${defendingPokemonName} attacks and deals ${damage}`)
+          // console.log("Your HP: ", currentMyPokemonHp)
+          // console.log("Enemy HP: ", currentEnemyPokemonHp)
           if (currentMyPokemonHp > 0) {
             setTimeout(function () {
               console.log("It's your move.")
@@ -371,13 +493,6 @@ function battleClosure(user) {
         }, 3000);
       }
     }
-    // one turn
-    // ---> choose option
-    // ---> choose do action
-    // ---> check if dead
-    // -----------> if opponent dead, generate win actions
-    // -----------> if you're dead, generate lose actions
-    // -----------> else, do another turn
   }
 }
 });
