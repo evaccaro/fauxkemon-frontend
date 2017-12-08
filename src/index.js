@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function(){
         event.preventDefault()
         let pokes = document.getElementById('pokes').value
         let pokeName = document.querySelectorAll('option').innerText
-        // debugger;
         fetch(`http://localhost:3000/users/${user.id}`, {method: "PATCH",
         headers: {'Accept': 'application/json',
         'Content-Type': 'application/json'},
