@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function(){
     })
   });
 
-  
+
     function greetUser(username){
       if (username.name !== ""){
         welcomeContainer.innerText = ""
@@ -215,6 +215,11 @@ document.addEventListener("DOMContentLoaded", function(){
     ctx.closePath();
   }
 
+  function resetDamage(){
+      myX = 225
+      EnemyX = 650
+  }
+
   function drawEnemyHealthLoss(){
     ctx.beginPath();
     ctx.fillStyle = 'red'
@@ -229,6 +234,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
   function loseMyHealth(){
     drawMyHealthLoss();
+    console.log("starting x: ", myX)
+    console.log("change: ", myDx)
     myX += myDx;
   }
 
@@ -248,11 +255,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function clearMySprite(pokemon){
-    let sprite = new Image()
-    sprite.src = ""
-    sprite.onload = function(){
-      ctx.drawImage(sprite, 0, 200, 450, 450)
-    }
+    ctx.clearRect(0, 200, 450, 450)
   }
 
   function clearEnemySprite(){
@@ -295,16 +298,18 @@ function battleClosure(user) {
 
       // clearMySprite(myPokemon)
       clearEnemySprite()
+      clearMySprite()
       showEnemySprite(enemyPokemon)
       showMySprite(myPokemon);
       myInitHealth()
       enemyInitHealth()
+      resetDamage()
+
+      // battleStatus.innerText = "";
 
 
-
-
-      let currentMyPokemonHp = parseInt(myPokemon.stat_hp, 10) * HP_MULTIPLIER;
-      let currentEnemyPokemonHp = parseInt(enemyPokemon.stat_hp, 10) * HP_MULTIPLIER;
+      let currentMyPokemonHp = Math.round(parseInt(myPokemon.stat_hp, 10) * HP_MULTIPLIER);
+      let currentEnemyPokemonHp = Math.round(parseInt(enemyPokemon.stat_hp, 10) * HP_MULTIPLIER);
       // Elements
       let battleButtonDiv = document.getElementById("battleButtonDiv");
       let battleStatusDisplay = document.getElementById("battleStatusDisplay");
@@ -324,11 +329,11 @@ function battleClosure(user) {
       console.log(battleStatus.innerText)
       let myHpDisplay = document.createElement("h3");
       myHpDisplay.id = "myHp";
-      myHpDisplay.innerText = currentMyPokemonHp;
+      myHpDisplay.innerText = `Your HP: ${currentMyPokemonHp}`;
       battleStatusDisplay.appendChild(myHpDisplay);
       let enemyHpDisplay = document.createElement("h3");
       enemyHpDisplay.id = "enemyHp";
-      enemyHpDisplay.innerText = currentEnemyPokemonHp;
+      enemyHpDisplay.innerText = `Enemy HP: ${currentEnemyPokemonHp}`;
       battleStatusDisplay.appendChild(enemyHpDisplay);
       // Need to add a run event listener
       // *** below is the battle flow ***
@@ -337,7 +342,7 @@ function battleClosure(user) {
       console.log("(Starting) Enemy pokemon hp: ", currentEnemyPokemonHp);
       //Test
       // enemyPokemon.stat_speed = 0; ////THIS LINE IS ONLY FOR TESTING PURPOSES!!!!!!!!
-      // enemyPokemon.stat_speed = 0;
+      enemyPokemon.stat_speed = 0;
       if (myPokemon.stat_speed >= enemyPokemon.stat_speed) {
         // you go first
         // choose menu options
@@ -350,17 +355,20 @@ function battleClosure(user) {
           setTimeout(function () {
             console.log("XP Gained: 0");
             battleStatus.innerText = "XP Gained: 0";
-            document.getElementById("battleButtonDiv").innerHTML = "";
-            battleStatus.innerText = "";
-            myHpDisplay.innerText = "";
-            enemyHpDisplay.innerText = "";
-            fightAgainButton = document.createElement("button");
-            fightAgainButton.id = "fightAgainButton";
-            fightAgainButton.innerText = "Fight again?"
-            battleButtonDiv.appendChild(fightAgainButton);
+            setTimeout(function () {
+              document.getElementById("battleButtonDiv").innerHTML = "";
+              battleStatus.innerText = "";
+              myHpDisplay.innerText = "";
+              enemyHpDisplay.innerText = "";
+              fightAgainButton = document.createElement("button");
+              fightAgainButton.id = "fightAgainButton";
+              fightAgainButton.innerText = "Fight again?"
+              battleButtonDiv.appendChild(fightAgainButton);
 
-            fightAgainButton.addEventListener("click", battleClosure(user))
-          }, 1000);
+              fightAgainButton.addEventListener("click", battleClosure(user))
+
+            }, 2000)
+          }, 2000);
         });
       } else {
         setTimeout(function () {
@@ -373,24 +381,29 @@ function battleClosure(user) {
 
         return function attack (event) {
           attackButton.removeEventListener("click", attack);
-          let damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
-          let minusBy = (damage * 100)/currentEnemyPokemonHp
+          let damage = parseInt(attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR);
+          let minusEnemyBy = (damage * 100)/(defendingPokemon.stat_hp * HP_MULTIPLIER);
           currentEnemyPokemonHp -= damage;
 
-            for(let i=0; i<minusBy; i++){
+          if (currentEnemyPokemonHp < 0) {
+            currentEnemyPokemonHp = 0;
+          }
+
+          //debugger;
+            for(let i=0; i<minusEnemyBy; i++){
               loseEnemyHealth()
             }
             //debugger;
 
           battleStatus.innerText = `You attacked! You dealt ${damage} damage.`;
-          myHpDisplay.innerText = currentMyPokemonHp;
-          enemyHpDisplay.innerText = currentEnemyPokemonHp;
+          myHpDisplay.innerText = `Your HP: ${currentMyPokemonHp}`;
+          enemyHpDisplay.innerText = `Enemy HP: ${currentEnemyPokemonHp}`;
           // console.log(`You attacked! You dealt ${damage} damage.`)
           // console.log("Your HP: ", currentMyPokemonHp)
           // console.log("Enemy HP: ", currentEnemyPokemonHp)
 
           if (currentEnemyPokemonHp > 0) {
-            defendingPokemonName = defendingPokemon.name;
+            let defendingPokemonName = defendingPokemon.name;
             defendingPokemonName = defendingPokemonName.charAt(0).toUpperCase() + defendingPokemonName.slice(1);
             defend(defendingPokemon, attackingPokemon);
           } else {
@@ -426,11 +439,16 @@ function battleClosure(user) {
               } else {
                 setTimeout(function () {
                   document.getElementById("battleButtonDiv").innerHTML = "";
-                  fightAgainButton = document.createElement("button");
-                  fightAgainButton.id = "fightAgainButton";
-                  fightAgainButton.innerText = "Fight again?"
-                  battleButtonDiv.appendChild(fightAgainButton);
-                  fightAgainButton.addEventListener("click", battleClosure(user))
+                  battleStatus.innerText = "";
+                  myHpDisplay.innerText = "";
+                  enemyHpDisplay.innerText = "";
+                  setTimeout(function() {
+                    fightAgainButton = document.createElement("button");
+                    fightAgainButton.id = "fightAgainButton";
+                    fightAgainButton.innerText = "Fight again?"
+                    battleButtonDiv.appendChild(fightAgainButton);
+                    fightAgainButton.addEventListener("click", battleClosure(user))
+                  }, 1000)
                 }, 1000);
               }});
         }
@@ -441,11 +459,14 @@ function battleClosure(user) {
         console.log(user)
         // DO STUFF
         battleStatus.innerText = "Through your trials and tribulations, you have gained enough experience to evolve.";
+        myHpDisplay.innerText = "";
+        enemyHpDisplay.innerText = "";
         //  > display message
 
         user.pokemon = evolvedPokemon;
         console.log(user)
         setTimeout(function () {
+          battleStatus.innerText = "";
           document.getElementById("battleButtonDiv").innerHTML = "";
           fightAgainButton = document.createElement("button");
           fightAgainButton.id = "fightAgainButton";
@@ -458,20 +479,24 @@ function battleClosure(user) {
       }
       function defend(attackingPokemon, defendingPokemon) {
         setTimeout(() => {
-          damage = attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR;
-          currentMyPokemonHp -= damage;
+          enemyDamage = parseInt(attackingPokemon.stat_attack - defendingPokemon.stat_defense / DEFENSE_DIVISOR);
 
-          let minusBy = (damage * 100)/currentEnemyPokemonHp
-          currentEnemyPokemonHp -= damage;
+          let minusBy = (enemyDamage * 100)/(defendingPokemon.stat_hp * HP_MULTIPLIER);
+          currentMyPokemonHp -= enemyDamage;
+
+          // let minusBy = (damage * 100)/currentMyPokemonHp
+
+          debugger;
             for(let i=0; i<minusBy; i++){
+              console.log(minusBy)
               loseMyHealth()
             }
-            // debugger;
+            debugger;
 
 
-          battleStatus.innerText = `${defendingPokemonName} attacks and deals ${damage}`;
-          myHpDisplay.innerText = currentMyPokemonHp;
-          enemyHpDisplay.innerText = currentEnemyPokemonHp;
+          battleStatus.innerText = `${defendingPokemon.name} attacks and deals ${enemyDamage}`;
+          myHpDisplay.innerText = `Your HP: ${currentMyPokemonHp}`;
+          enemyHpDisplay.innerText = `Enemy HP: ${currentEnemyPokemonHp}`;
           // console.log(`${defendingPokemonName} attacks and deals ${damage}`)
           // console.log("Your HP: ", currentMyPokemonHp)
           // console.log("Enemy HP: ", currentEnemyPokemonHp)
