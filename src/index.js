@@ -63,11 +63,6 @@ document.addEventListener("DOMContentLoaded", function(){
         body: JSON.stringify({user:{pokemon_id: pokes}})})
         .then(res => res.json()).then(json => {pokemon = json.pokemon
           showPoke(json, pokemon)
-          // battleButton = document.createElement('button');
-          // battleButton.id = "battleButton"
-          // battleButton.innerText = "Battle!"
-          // document.getElementById("battleButtonDiv").appendChild(battleButton);
-          // battleButton.addEventListener("click", battleClosure(json));
         });
       });
     })
@@ -208,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function(){
   let ctx = battleCanvas.getContext('2d')
 
   // function draw(){
-  //   // debugger;
+  //   //
   //   ctx.beginPath();
   //   ctx.fillRect(50, 450, 100, 10)
   //   ctx.fillStyle = "#0095DD";
@@ -408,7 +403,7 @@ function battleClosure(user) {
         // DO STUFF
         battleStatus.innerText = "Through your trials and tribulations, you have gained enough experience to evolve.";
         //  > display message
-        debugger;
+
         user.pokemon = evolvedPokemon;
         console.log(user)
         setTimeout(function () {
@@ -418,7 +413,7 @@ function battleClosure(user) {
           fightAgainButton.innerText = "Fight again?"
           battleButtonDiv.appendChild(fightAgainButton);
           fightAgainButton.addEventListener("click", battleClosure(user))
-          debugger;
+
         }, 1000);
       }
 
