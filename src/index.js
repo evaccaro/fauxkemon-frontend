@@ -486,12 +486,12 @@ function battleClosure(user) {
 
           // let minusBy = (damage * 100)/currentMyPokemonHp
 
-          //debugger;
+          debugger;
             for(let i=0; i<minusBy; i++){
               console.log(minusBy)
               loseMyHealth()
             }
-            //debugger;
+            debugger;
 
 
           battleStatus.innerText = `${defendingPokemon.name} attacks and deals ${enemyDamage}`;
